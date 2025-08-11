@@ -1,0 +1,259 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-light: #ffffff;
+  --color-dark: #171717;
+}
+
+.accent-text {
+  @apply text-slate-600;
+}
+
+body {
+  font-family:
+    "Inter Variable",
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    "Noto Sans",
+    sans-serif,
+    "Apple Color Emoji",
+    "Segoe UI Emoji",
+    "Segoe UI Symbol",
+    "Noto Color Emoji";
+  color: var(--color-dark);
+  background: var(--color-light);
+}
+
+/* only use this to update the style of the auth input fields. use a different class for all other input fields */
+.auth-input-field {
+  @apply w-full px-4 py-3 rounded-container bg-white border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-shadow shadow-sm hover:shadow;
+}
+
+/* only use this to update the style of the auth buttons. use the button class for all other buttons */
+.auth-button {
+  @apply w-full px-4 py-3 rounded bg-primary text-white font-semibold hover:bg-primary-hover transition-colors shadow-sm hover:shadow disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+/* Camera scanner responsive styles */
+.camera-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  contain: layout style paint;
+  will-change: auto;
+  margin: 0 auto;
+  max-width: 100%;
+}
+
+.camera-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Touch-friendly button styles */
+.touch-manipulation {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: pointer;
+}
+
+/* 3x3 Grid Overlay Styles */
+.grid-overlay {
+  transition: opacity 0.2s ease-in-out;
+  pointer-events: none;
+  will-change: opacity;
+  contain: layout style paint;
+}
+
+.grid-visible {
+  opacity: 1;
+  animation: gridFadeIn 0.3s ease-in-out;
+}
+
+.grid-hidden {
+  opacity: 0;
+  animation: gridFadeOut 0.3s ease-in-out;
+}
+
+.grid-line {
+  transition: opacity 0.2s ease-in-out;
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.3);
+  will-change: opacity;
+}
+
+/* Grid animations */
+@keyframes gridFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes gridFadeOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+/* Responsive grid line thickness */
+@media screen and (max-width: 640px) {
+  .grid-line {
+    background-color: rgba(255, 255, 255, 0.5);
+  }
+}
+
+@media screen and (min-width: 641px) {
+  .grid-line {
+    background-color: rgba(255, 255, 255, 0.4);
+  }
+  
+  .grid-overlay .grid-line:nth-child(1),
+  .grid-overlay .grid-line:nth-child(2) {
+    width: 1px;
+  }
+  
+  .grid-overlay .grid-line:nth-child(3),
+  .grid-overlay .grid-line:nth-child(4) {
+    height: 1px;
+  }
+}
+
+/* Enhanced cube guide styling */
+.cube-guide {
+  backdrop-filter: blur(1px);
+}
+
+.cube-guide::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  border-radius: inherit;
+  z-index: -1;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Mobile optimizations */
+@media screen and (max-width: 768px) {
+  .camera-container {
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .camera-video {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+  
+  .grid-overlay {
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+  
+  /* Optimize button interactions on mobile */
+  .touch-manipulation {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+  }
+}
+
+/* Responsive spacing for camera scanner */
+@media screen and (max-width: 640px) {
+  /* Small mobile devices */
+  .camera-scanner-spacing {
+    margin-left: 1rem;
+    margin-right: 1rem;
+  }
+}
+
+@media screen and (min-width: 641px) and (max-width: 768px) {
+  /* Medium mobile devices and small tablets */
+  .camera-scanner-spacing {
+    margin-left: 1.5rem;
+    margin-right: 1.5rem;
+  }
+}
+
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+  /* Tablets and small desktops */
+  .camera-scanner-spacing {
+    margin-left: 2rem;
+    margin-right: 2rem;
+  }
+}
+
+@media screen and (min-width: 1025px) {
+  /* Large desktops */
+  .camera-scanner-spacing {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .grid-line {
+    background-color: rgba(255, 255, 255, 0.8) !important;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.8);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .grid-overlay,
+  .grid-line,
+  .cube-guide::before {
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  .grid-visible,
+  .grid-hidden {
+    animation: none !important;
+  }
+}

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CUBOT - Rubik's Cube Robot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="logo">CUBOT</h1>
+                <div class="connection-status">
+                    <div class="status-indicator" id="connectionStatus">
+                        <span class="status-dot"></span>
+                        <span class="status-text">Connecting...</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Left Panel - 3D Cube -->
+            <div class="cube-panel">
+                <div class="cube-container">
+                    <canvas id="cubeCanvas"></canvas>
+                    <div class="cube-overlay">
+                        <div class="cube-info" id="cubeInfo">
+                            <span>Ready</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel - Controls -->
+            <div class="control-panel">
+                <!-- Mode Tabs -->
+                <div class="mode-tabs">
+                    <button class="tab-button active" data-mode="solving">
+                        <span class="tab-icon">🎯</span>
+                        Solving Mode
+                    </button>
+                    <button class="tab-button" data-mode="learning">
+                        <span class="tab-icon">📚</span>
+                        Learning Mode
+                    </button>
+                </div>
+
+                <!-- Solving Mode Content -->
+                <div class="mode-content active" id="solvingMode">
+                    <div class="dashboard">
+                        <div class="dashboard-header">
+                            <h2>Cube Solver Dashboard</h2>
+                        </div>
+                        
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-label">Move Count</div>
+                                <div class="stat-value" id="moveCount">0</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Elapsed Time</div>
+                                <div class="stat-value" id="elapsedTime">00:00</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Progress</div>
+                                <div class="stat-value" id="progressPercent">0%</div>
+                            </div>
+                        </div>
+
+                        <div class="progress-section">
+                            <div class="progress-bar">
+                                <div class="progress-fill" id="progressFill"></div>
+                            </div>
+                            <div class="current-move" id="currentMove">Ready to solve</div>
+                        </div>
+
+                        <div class="control-buttons">
+                            <button class="btn btn-primary" id="startSolving">
+                                <span class="btn-icon">▶️</span>
+                                Start Solving
+                            </button>
+                            <button class="btn btn-secondary" id="stopSolving" disabled>
+                                <span class="btn-icon">⏹️</span>
+                                Stop
+                            </button>
+                            <button class="btn btn-tertiary" id="scrambleCube">
+                                <span class="btn-icon">🔀</span>
+                                Scramble
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Learning Mode Content -->
+                <div class="mode-content" id="learningMode">
+                    <div class="learning-dashboard">
+                        <div class="dashboard-header">
+                            <h2>CFOP Method Learning</h2>
+                        </div>
+
+                        <div class="cfop-steps">
+                            <div class="step-selector">
+                                <button class="step-btn active" data-step="cross">
+                                    <span class="step-number">1</span>
+                                    <span class="step-name">Cross</span>
+                                </button>
+                                <button class="step-btn" data-step="f2l">
+                                    <span class="step-number">2</span>
+                                    <span class="step-name">F2L</span>
+                                </button>
+                                <button class="step-btn" data-step="oll">
+                                    <span class="step-number">3</span>
+                                    <span class="step-name">OLL</span>
+                                </button>
+                                <button class="step-btn" data-step="pll">
+                                    <span class="step-number">4</span>
+                                    <span class="step-name">PLL</span>
+                                </button>
+                            </div>
+
+                            <div class="step-content">
+                                <div class="step-info">
+                                    <h3 id="stepTitle">Cross</h3>
+                                    <p id="stepDescription">Form a cross on the bottom face</p>
+                                </div>
+
+                                <div class="step-navigation">
+                                    <button class="nav-btn" id="prevStep" disabled>
+                                        <span>← Previous</span>
+                                    </button>
+                                    <span class="step-counter" id="stepCounter">1 / 2</span>
+                                    <button class="nav-btn" id="nextStep">
+                                        <span>Next →</span>
+                                    </button>
+                                </div>
+
+                                <div class="algorithm-display">
+                                    <div class="algorithm-label">Algorithm:</div>
+                                    <div class="algorithm-moves" id="algorithmMoves">F D R' U' R F'</div>
+                                </div>
+
+                                <div class="learning-controls">
+                                    <button class="btn btn-primary" id="demonstrateStep">
+                                        <span class="btn-icon">🎬</span>
+                                        Demonstrate
+                                    </button>
+                                    <button class="btn btn-secondary" id="practiceStep">
+                                        <span class="btn-icon">🎯</span>
+                                        Practice
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Manual Controls -->
+                <div class="manual-controls">
+                    <div class="manual-header">
+                        <h3>Manual Controls</h3>
+                    </div>
+                    <div class="move-buttons">
+                        <div class="move-row">
+                            <button class="move-btn" data-move="U">U</button>
+                            <button class="move-btn" data-move="U'">U'</button>
+                            <button class="move-btn" data-move="U2">U2</button>
+                        </div>
+                        <div class="move-row">
+                            <button class="move-btn" data-move="R">R</button>
+                            <button class="move-btn" data-move="R'">R'</button>
+                            <button class="move-btn" data-move="R2">R2</button>
+                        </div>
+                        <div class="move-row">
+                            <button class="move-btn" data-move="F">F</button>
+                            <button class="move-btn" data-move="F'">F'</button>
+                            <button class="move-btn" data-move="F2">F2</button>
+                        </div>
+                        <div class="move-row">
+                            <button class="move-btn" data-move="D">D</button>
+                            <button class="move-btn" data-move="D'">D'</button>
+                            <button class="move-btn" data-move="D2">D2</button>
+                        </div>
+                        <div class="move-row">
+                            <button class="move-btn" data-move="L">L</button>
+                            <button class="move-btn" data-move="L'">L'</button>
+                            <button class="move-btn" data-move="L2">L2</button>
+                        </div>
+                        <div class="move-row">
+                            <button class="move-btn" data-move="B">B</button>
+                            <button class="move-btn" data-move="B'">B'</button>
+                            <button class="move-btn" data-move="B2">B2</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
