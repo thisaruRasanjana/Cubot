@@ -40,7 +40,7 @@ The project is divided into two main components:
 3. Flash the code to your ESP32.
 
 ### Setting up the Software (Raspberry Pi)
-Please refer to the detailed [Web App README](web%20app%20on%20raspberry%20pi/README.md) for instructions on:
+Please refer to the detailed [Web App README](<web app on raspberry pi/README.md>) for instructions on:
 - Installing Python dependencies for OpenCV and Flask.
 - Installing Node.js dependencies for the React frontend.
 - Connecting the Raspberry Pi to the ESP32.
